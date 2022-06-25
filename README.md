@@ -44,3 +44,9 @@ npm run build
 ```sh
 npm run lint
 ```
+
+## TODOs
+
+* Add wheel of fortune like graphics (SVG + CSS animation)
+* Add clock + timer in Footer
+* New view: Score tracker
