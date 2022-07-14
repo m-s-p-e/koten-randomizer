@@ -1,3 +1,10 @@
+<template>
+  <HeaderNavbar @submit.prevent="loadNames" />
+  <main class="container my-3">
+    <RandomizerMain :names="names" />
+  </main>
+</template>
+
 <script setup lang="ts">
 import { ref } from "vue";
 import HeaderNavbar from "./components/HeaderNavbar.vue";
@@ -18,14 +25,8 @@ async function loadNames(e: Event) {
 }
 </script>
 
-<template>
-  <HeaderNavbar @submit.prevent="loadNames" />
-  <main class="container my-3">
-    <RandomizerMain :names="names" />
-  </main>
-</template>
-
 <style>
+@import "bootstrap/dist/css/bootstrap.min.css";
 main {
   text-align: center;
 }
