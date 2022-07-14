@@ -1,16 +1,18 @@
 <template>
   <HeaderNavbar @submit.prevent="loadNames" />
-  <main class="container my-3">
-    <RandomizerMain :names="names" />
+  <main
+    class="d-flex justify-content-evenly align-items-start flex-wrap gap-3 m-3"
+  >
+    <RandomizerMain v-for="(list, i) in lists" :key="i" :listIndex="i" />
   </main>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import HeaderNavbar from "./components/HeaderNavbar.vue";
 import RandomizerMain from "./components/RandomizerMain.vue";
+import { useGlobalState } from "./store";
 
-const names = ref<string[]>([]);
+const lists = useGlobalState();
 
 interface FormElements extends HTMLFormControlsCollection {
   "file-input": HTMLInputElement;
@@ -21,7 +23,11 @@ async function loadNames(e: Event) {
   const fileInput = (form.elements as FormElements)["file-input"];
   const [file] = fileInput.files || [];
   const text = await file.text();
-  names.value = text.trim().split("\n");
+  lists.value.push({
+    pending: text.trim().split("\n"),
+    choosen: [],
+    eliminated: [],
+  });
 }
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="card text-center mx-auto" style="max-width: 60ch">
+  <div class="card text-center randomizer-card">
     <div class="card-header">
       <ul class="nav nav-tabs card-header-tabs flex-column flex-sm-row">
         <li class="nav-item me-sm-auto">
@@ -10,7 +10,7 @@
           >
             Aktuelles Team
             <span class="badge rounded-pill bg-primary">
-              {{ choosen.length }}
+              {{ listState.choosen.length }}
             </span>
           </a>
         </li>
@@ -22,7 +22,7 @@
           >
             Pool
             <span class="badge rounded-pill bg-primary">
-              {{ pending.length }}
+              {{ listState.pending.length }}
             </span>
           </a>
         </li>
@@ -34,7 +34,7 @@
           >
             Ausgeschieden
             <span class="badge rounded-pill bg-primary">
-              {{ eliminated.length }}
+              {{ listState.eliminated.length }}
             </span>
           </a>
         </li>
@@ -51,15 +51,15 @@
           />
           <button
             @click="newKote"
-            :disabled="pending.length < teamSize"
+            :disabled="listState.pending.length < teamSize"
             class="btn btn-primary flex-grow-1"
           >
             Neuer Kote
           </button>
         </div>
-        <ul v-if="choosen.length" class="list-group">
+        <ul v-if="listState.choosen.length" class="list-group">
           <li
-            v-for="name in choosen"
+            v-for="name in listState.choosen"
             :key="name"
             class="list-group-item d-flex justify-content-between"
           >
@@ -76,7 +76,7 @@
         </ul>
         <button
           @click="clearTeam"
-          :disabled="!choosen.length"
+          :disabled="!listState.choosen.length"
           class="btn btn-danger"
         >
           🗑️ Auswahl zurücksetzen
@@ -86,7 +86,11 @@
     <div v-else-if="view === 'pending'" class="card-body">
       <h5 class="card-title">Ausstehende Koten</h5>
       <ul class="list-group">
-        <li v-for="name in pending" :key="name" class="list-group-item">
+        <li
+          v-for="name in listState.pending"
+          :key="name"
+          class="list-group-item"
+        >
           {{ name }}
         </li>
       </ul>
@@ -96,13 +100,17 @@
       <div class="card-text vstack gap-3">
         <button
           @click="resetEliminated"
-          :disabled="!eliminated.length"
+          :disabled="!listState.eliminated.length"
           class="btn btn-primary"
         >
           ♻️ Zum Pool hinzufügen
         </button>
-        <ul v-if="eliminated.length" class="list-group">
-          <li v-for="name in eliminated" :key="name" class="list-group-item">
+        <ul v-if="listState.eliminated.length" class="list-group">
+          <li
+            v-for="name in listState.eliminated"
+            :key="name"
+            class="list-group-item"
+          >
             {{ name }}
           </li>
         </ul>
@@ -112,54 +120,50 @@
 </template>
 
 <script lang="ts" setup>
-import { useLocalStorage } from "@vueuse/core";
-import { ref, watch } from "vue";
+import { useGlobalState } from "@/store";
+import { computed, ref } from "vue";
 
-const props = defineProps<{ names: string[] }>();
-
-console.log(props.names[0]);
-
-const pending = useLocalStorage<string[]>("pending", []);
-const choosen = useLocalStorage<string[]>("choosen", []);
-const eliminated = useLocalStorage<string[]>("eliminated", []);
+const props = defineProps<{ listIndex: number }>();
 const teamSize = ref(1);
 const view = ref("current");
 
-watch(
-  () => props.names,
-  (names) => {
-    pending.value = names;
-    choosen.value = [];
-    eliminated.value = [];
-  }
-);
+const lists = useGlobalState();
+const listState = computed(() => lists.value[props.listIndex]);
 
 function newKote() {
   for (let index = 0; index < teamSize.value; index++) {
     const name =
-      pending.value[Math.floor(pending.value.length * Math.random())];
-    choosen.value.push(name);
-    pending.value = pending.value.filter((k) => k != name);
+      listState.value.pending[
+        Math.floor(listState.value.pending.length * Math.random())
+      ];
+    listState.value.choosen.push(name);
+    listState.value.pending = listState.value.pending.filter((k) => k != name);
   }
 }
 
 function moveKoteBack(name: string) {
-  pending.value.push(name);
-  choosen.value = choosen.value.filter((k) => k != name);
+  listState.value.pending.push(name);
+  listState.value.choosen = listState.value.choosen.filter((k) => k != name);
 }
 
 function moveKoteAhead(name: string) {
-  eliminated.value.push(name);
-  choosen.value = choosen.value.filter((k) => k != name);
+  listState.value.eliminated.push(name);
+  listState.value.choosen = listState.value.choosen.filter((k) => k != name);
 }
 
 function clearTeam() {
-  eliminated.value.push(...choosen.value);
-  choosen.value = [];
+  listState.value.eliminated.push(...listState.value.choosen);
+  listState.value.choosen = [];
 }
 
 function resetEliminated() {
-  pending.value.push(...eliminated.value);
-  eliminated.value = [];
+  listState.value.pending.push(...listState.value.eliminated);
+  listState.value.eliminated = [];
 }
 </script>
+
+<style>
+.randomizer-card {
+  max-width: 80ch;
+}
+</style>
