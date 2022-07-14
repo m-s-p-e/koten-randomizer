@@ -41,6 +41,10 @@
       </ul>
     </div>
     <div v-if="view === 'current'" class="card-body">
+      <div v-if="alert" class="alert alert-warning">
+        {{ alert }}
+        <button @click="alert = ''" type="button" class="btn-close"></button>
+      </div>
       <h5 class="card-title">Aktuelles Team</h5>
       <div class="card-text vstack gap-3">
         <div class="input-group">
@@ -122,6 +126,7 @@ const choosen = useLocalStorage<string[]>("choosen", []);
 const eliminated = useLocalStorage<string[]>("eliminated", []);
 const teamSize = ref(1);
 const view = ref("current");
+const alert = ref("");
 
 watch(
   () => props.names,
@@ -133,6 +138,10 @@ watch(
 );
 
 function newKote() {
+  if (teamSize.value > pending.value.length) {
+    alert.value = `${teamSize.value} Koten können nicht gezogen werden, nur ${pending.value.length} vorhanden`;
+    return;
+  }
   for (let index = 0; index < teamSize.value; index++) {
     const name =
       pending.value[Math.floor(pending.value.length * Math.random())];
