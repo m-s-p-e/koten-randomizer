@@ -76,7 +76,7 @@
         </ul>
         <button
           @click="clearTeam"
-          :disabled="!pending.length"
+          :disabled="!choosen.length"
           class="btn btn-danger"
         >
           🗑️ Auswahl zurücksetzen
@@ -116,6 +116,8 @@ import { useLocalStorage } from "@vueuse/core";
 import { ref, watch } from "vue";
 
 const props = defineProps<{ names: string[] }>();
+
+console.log(props.names[0]);
 
 const pending = useLocalStorage<string[]>("pending", []);
 const choosen = useLocalStorage<string[]>("choosen", []);
