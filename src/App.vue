@@ -5,11 +5,13 @@
   >
     <RandomizerMain v-for="(list, i) in lists" :key="i" :listIndex="i" />
   </main>
+  <ReloadPrompt />
 </template>
 
 <script setup lang="ts">
 import HeaderNavbar from "./components/HeaderNavbar.vue";
 import RandomizerMain from "./components/RandomizerMain.vue";
+import ReloadPrompt from "./components/ReloadPrompt.vue";
 import { useGlobalState } from "./store";
 
 const lists = useGlobalState();
