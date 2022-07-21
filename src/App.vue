@@ -3,7 +3,12 @@
   <main
     class="d-flex justify-content-evenly align-items-start flex-wrap gap-3 m-3"
   >
-    <RandomizerMain v-for="(list, i) in lists" :key="i" :listIndex="i" />
+    <RandomizerMain
+      v-for="(list, i) in lists"
+      :key="i"
+      :listIndex="i"
+      class="flex-grow-1"
+    />
   </main>
   <ReloadPrompt />
 </template>

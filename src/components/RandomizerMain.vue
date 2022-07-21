@@ -116,6 +116,9 @@
         </ul>
       </div>
     </div>
+    <div class="card-footer">
+      <button type="button" @click="removeList" class="btn-close"></button>
+    </div>
   </div>
 </template>
 
@@ -160,10 +163,15 @@ function resetEliminated() {
   listState.value.pending.push(...listState.value.eliminated);
   listState.value.eliminated = [];
 }
+
+function removeList() {
+  if (!window.confirm("Diese Liste löschen?")) return;
+  lists.value.splice(props.listIndex, 1);
+}
 </script>
 
 <style>
 .randomizer-card {
-  max-width: 80ch;
+  max-width: 70ch;
 }
 </style>
